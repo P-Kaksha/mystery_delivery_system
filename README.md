@@ -24,8 +24,8 @@ Saves the final results to report.json.
 ## Project Structure
 mystery_delivery/
 │
-├── main.py
 ├── data.json
+├── main.py
 ├── report.json
 └── README.md
 ## Files
