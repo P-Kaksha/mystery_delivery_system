@@ -49,7 +49,7 @@ modules.
 
 Open a terminal inside the project directory:
 
-cd mystery_delivery
+cd Mystery_Delivery_System
 
 Run the program:
 
