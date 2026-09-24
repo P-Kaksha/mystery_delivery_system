@@ -1,181 +1,211 @@
-# mystery_delivery_system
-A Python delivery simulation using Euclidean distance to assign packages to the nearest agent and generate delivery performance reports.
+## Mystery Delivery System
+
+A Python-based delivery simulation system for FastBox. The program assigns packages to the nearest delivery agent using Euclidean distance, simulates package deliveries, calculates delivery efficiency, identifies the best-performing agent, and generates a final report.
 
 ## Project Overview
 
-The Mystery Delivery System contains:
+The Mystery Delivery System simulates one day of package deliveries.
 
-Warehouses with 2D coordinates
-Delivery agents with 2D coordinates
-Packages assigned to warehouses
+The system contains:
+
+Warehouses
+Delivery agents
+Packages
 Package destinations
 
-For each package, the system:
+For every package, the system:
 
-Finds the warehouse associated with the package.
-Finds the delivery agent closest to that warehouse.
+Identifies the package's warehouse.
+Finds the agent closest to that warehouse.
 Assigns the package to that agent.
 Calculates the delivery distance.
 Updates the agent's delivery statistics.
-Calculates the agent's average delivery distance.
+Calculates delivery efficiency.
 Identifies the best-performing agent.
 Saves the final results to report.json.
-
 ## Project Structure
-mystery_delivery/
+Mystery_Delivery_System/
 │
 ├── data.json
 ├── main.py
 ├── report.json
 └── README.md
-## Files
+File Description
 File	Description
-main.py	Main Python program containing the delivery logic
-data.json	Input data containing warehouses, agents and packages
-report.json	Generated output containing delivery statistics
+main.py	Contains the complete Python implementation
+data.json	Contains warehouse, agent, and package input data
+report.json	Contains the generated delivery report
 README.md	Project documentation
 ## Requirements
 Python 3.x
-No external Python packages are required.
+Git (optional, for version control)
+VS Code or any Python-compatible editor
 
-The project uses Python's built-in:
+No external Python libraries are required.
+
+The program uses Python's built-in:
 
 json
 math
 
 modules.
 
-## How to Run
-
-Open a terminal inside the project directory:
-
-cd Mystery_Delivery_System
-
-Run the program:
-
-python main.py
-
-The program reads:
-
-data.json
-
-and generates:
-
-report.json
-
-The package assignments and final report are also displayed in the terminal.
-
 ## Input Format
 
-The program supports two formats for warehouses and agents.
+The program supports two different input formats.
 
-Format 1 — List of Dictionaries
+Format 1 — Base Case
 
-Example:
+In the base case, warehouses and agents are represented as lists of dictionaries.
 
+Warehouses
 {
     "warehouses": [
-        {
-            "id": "W1",
-            "location": [34, 29]
-        },
-        {
-            "id": "W2",
-            "location": [95, 4]
-        }
-    ],
+        {"id": "W1", "location": [0, 0]},
+        {"id": "W2", "location": [50, 75]},
+        {"id": "W3", "location": [100, 25]}
+    ]
+}
+Agents
+{
     "agents": [
+        {"id": "A1", "location": [5, 5]},
+        {"id": "A2", "location": [60, 60]},
+        {"id": "A3", "location": [95, 30]}
+    ]
+}
+Packages
+
+The base case uses warehouse_id to identify the package's warehouse.
+
+{
+    "packages": [
         {
-            "id": "A1",
-            "location": [89, 16]
-        },
-        {
-            "id": "A2",
-            "location": [52, 21]
+            "id": "P1",
+            "warehouse_id": "W1",
+            "destination": [30, 40]
         }
     ]
 }
+Complete Base Case
+{
+    "warehouses": [
+        {"id": "W1", "location": [0, 0]},
+        {"id": "W2", "location": [50, 75]},
+        {"id": "W3", "location": [100, 25]}
+    ],
 
-The program converts this format into a common dictionary representation.
+    "agents": [
+        {"id": "A1", "location": [5, 5]},
+        {"id": "A2", "location": [60, 60]},
+        {"id": "A3", "location": [95, 30]}
+    ],
 
-Format 2 — Dictionary
+    "packages": [
+        {"id": "P1", "warehouse_id": "W1", "destination": [30, 40]},
+        {"id": "P2", "warehouse_id": "W2", "destination": [70, 90]},
+        {"id": "P3", "warehouse_id": "W3", "destination": [105, 20]},
+        {"id": "P4", "warehouse_id": "W1", "destination": [10, 10]},
+        {"id": "P5", "warehouse_id": "W2", "destination": [40, 80]}
+    ]
+}
+Format 2 — Test Case Format
 
-Example:
+Some test cases represent warehouses and agents as dictionaries, where each ID directly maps to its coordinates.
 
+Warehouses
 {
     "warehouses": {
-        "W1": [34, 29],
-        "W2": [95, 4]
-    },
-    "agents": {
-        "A1": [89, 16],
-        "A2": [52, 21]
+        "W1": [11, 35],
+        "W2": [14, 40],
+        "W3": [75, 54]
     }
 }
+Agents
+{
+    "agents": {
+        "A1": [69, 36],
+        "A2": [64, 71],
+        "A3": [97, 58]
+    }
+}
+Packages
 
-Both formats are normalized internally to:
+These test cases use warehouse instead of warehouse_id.
 
 {
-    "W1": [34, 29],
-    "W2": [95, 4]
+    "packages": [
+        {
+            "id": "P1",
+            "warehouse": "W2",
+            "destination": [22, 50]
+        }
+    ]
 }
+## Internal Normalization
 
-This allows the rest of the program to work with both input formats.
+Because the program supports both input formats, normalize_locations() converts them into one common internal format.
 
-Package Format
+For example, this input:
 
-Each package contains:
+[
+    {"id": "W1", "location": [0, 0]},
+    {"id": "W2", "location": [50, 75]}
+]
+
+is converted internally to:
 
 {
-    "id": "P1",
-    "warehouse": "W1",
-    "destination": [12, 7]
+    "W1": [0, 0],
+    "W2": [50, 75]
 }
 
-Some supported test inputs use:
+Similarly, an input that is already in dictionary format:
+
+{
+    "W1": [11, 35],
+    "W2": [14, 40]
+}
+
+is used in the same internal structure.
+
+This allows the remaining program logic to work with both input formats consistently.
+
+Package Warehouse Field
+
+The program supports both:
 
 "warehouse_id": "W1"
 
-instead of:
+and:
 
 "warehouse": "W1"
 
-The program supports both forms.
+The code retrieves the warehouse using:
+
+warehouse_id = package.get("warehouse") or package.get("warehouse_id")
+
+Therefore, both package formats are supported.
 
 ## Core Algorithm
-1. Load JSON Data
+1. Load Input Data
 
-The load_data() function reads and parses data.json.
+The program reads data.json using Python's json module.
 
-def load_data(file_name):
-    with open(file_name, 'r') as file:
-        return json.load(file)
-2. Normalize Locations
+data = load_data("data.json")
+2. Normalize Warehouses and Agents
 
-The normalize_locations() function converts both supported warehouse and agent formats into a common dictionary structure.
+The program converts both supported warehouse and agent formats into dictionaries.
 
-For example:
-
-Input:
-[
-    {"id": "W1", "location": [10, 20]},
-    {"id": "W2", "location": [30, 40]}
-]
-
-↓
-
-Normalized:
-{
-    "W1": [10, 20],
-    "W2": [30, 40]
-}
+warehouses = normalize_locations(data, "warehouses")
+agents = normalize_locations(data, "agents")
 3. Calculate Euclidean Distance
 
-The distance between two points is calculated using:
+The distance between two points is calculated using the Euclidean distance formula:
 
 distance = √((x2 - x1)² + (y2 - y1)²)
 
-The implementation is:
+The implementation uses:
 
 def calculate_distance(point_1, point_2):
     x1, y1 = point_1
@@ -185,324 +215,360 @@ def calculate_distance(point_1, point_2):
         (x2 - x1) ** 2 +
         (y2 - y1) ** 2
     )
-4. Assign Packages
+## Package Assignment
 
-Each package is assigned to the agent closest to its warehouse.
+Each package is assigned to the agent who is closest to the package's warehouse.
 
-For example:
-
-Warehouse W1
-     |
-     | find nearest agent
-     |
-     +------ A1
-     |
-     +------ A2
-     |
-     +------ A3
-
-The agent with the smallest distance from the warehouse is selected.
-
-The assignment is stored as:
-
-{
-    "P1": "A3",
-    "P2": "A1",
-    "P3": "A3"
-}
-## Delivery Simulation
-
-For every package, the delivery route is:
-
-Agent
-  |
-  v
-Warehouse
-  |
-  v
-Destination
-
-The total distance for one package is:
+The distance used for assignment is:
 
 Agent → Warehouse
-+
-Warehouse → Destination
 
 For example:
 
-Agent A1 = [10, 10]
-Warehouse W1 = [20, 20]
-Destination = [30, 30]
+Agent A1
+   ↓
+Warehouse W1
+   ↓
+Package P1
 
-The package distance is:
+The program calculates the distance from every available agent to the warehouse and selects the agent with the smallest distance.
 
-distance(A1, W1)
+Delivery Simulation
+
+After assigning a package, the delivery distance is calculated as:
+
+Agent → Warehouse → Destination
+
+Therefore:
+
+Package Distance =
+Agent-to-Warehouse Distance
 +
-distance(W1, Destination)
+Warehouse-to-Destination Distance
 
-The agent's original location is used for the pickup calculation for each assigned package.
+For example:
 
-## Efficiency
+A1 → W1 → P1 Destination
 
-The delivery efficiency used by this project is:
+Both parts of the route contribute to the agent's total distance.
 
-Efficiency = Total Distance / Packages Delivered
+Agent Statistics
 
-For example, if an agent delivers 4 packages and travels 80 units:
+For every agent, the program tracks:
 
-Efficiency = 80 / 4
-           = 20
+{
+    "packages_delivered": 0,
+    "total_distance": 0.0
+}
 
-A lower value means less average distance traveled per delivered package.
+After processing packages, the report also contains:
 
-Agents that did not deliver any packages are not considered when identifying the best agent.
+{
+    "packages_delivered": 5,
+    "total_distance": 123.45,
+    "efficiency": 24.69
+}
+Efficiency
 
-## Best Agent
+Efficiency is calculated as:
 
-The program identifies the agent with the lowest average distance per delivered package.
+Efficiency =
+Total Distance / Packages Delivered
 
-Agents with:
+For example, if an agent delivers 5 packages and travels 100 units:
 
-packages_delivered = 0
+100 / 5 = 20
 
-are excluded from this calculation.
+Therefore:
 
-If no packages are delivered, the value of best_agent is:
+Efficiency = 20 units per package
 
-null
-## Output
+A lower distance per package represents less travel per delivered package.
 
-The program generates report.json.
+Best Agent
 
-Example:
+The program identifies the best agent based on the lowest efficiency value among agents who delivered at least one package.
+
+Agents who delivered zero packages are excluded from the best-agent calculation.
+
+For example:
+
+A1 → 25.40
+A2 → 18.20
+A3 → 31.70
+
+The agent with the lowest efficiency value is selected.
+
+The result is stored as:
+
+"best_agent": "A2"
+Output
+
+The final report is saved to:
+
+report.json
+
+A typical report has the following structure:
 
 {
     "A1": {
-        "packages_delivered": 4,
-        "total_distance": 76.39,
-        "efficiency": 19.1
+        "packages_delivered": 2,
+        "total_distance": 50.25,
+        "efficiency": 25.13
     },
     "A2": {
-        "packages_delivered": 1,
-        "total_distance": 31.36,
-        "efficiency": 31.36
+        "packages_delivered": 3,
+        "total_distance": 60.50,
+        "efficiency": 20.17
     },
     "A3": {
-        "packages_delivered": 7,
-        "total_distance": 137.9,
-        "efficiency": 19.7
-    },
-    "A4": {
         "packages_delivered": 0,
         "total_distance": 0.0,
         "efficiency": 0.0
     },
-    "best_agent": "A1"
+    "best_agent": "A2"
 }
 
-The actual values depend on the contents of data.json.
+The exact values depend on the contents of data.json.
 
+Program Functions
+load_data()
+
+Loads and parses JSON data from the input file.
+
+load_data(file_name)
+normalize_locations()
+
+Converts both supported warehouse and agent formats into a common dictionary format.
+
+normalize_locations(data, key)
+
+## Supported formats:
+
+List of dictionaries
+        ↓
+Dictionary of coordinates
+calculate_distance()
+
+Calculates the Euclidean distance between two points.
+
+calculate_distance(point_1, point_2)
+find_nearest_agent()
+
+Finds the agent closest to a specified warehouse.
+
+find_nearest_agent(warehouse_location, agents)
+assign_packages()
+
+Assigns every package to the nearest available agent.
+
+assign_packages(packages, warehouses, agents)
+simulate_delivery()
+
+Calculates delivery distances and updates each agent's delivery statistics.
+
+simulate_delivery(packages, assignments, warehouses, agents)
+calculate_efficiency()
+
+Calculates the distance traveled per delivered package.
+
+calculate_efficiency(report)
+find_best_agent()
+
+Finds the active agent with the lowest efficiency.
+
+find_best_agent(report)
+save_report()
+
+Saves the final report as JSON.
+
+save_report(report, file_name)
 ## Error Handling
 
-The program includes basic input validation.
+The program includes basic validation for invalid input situations.
 
 Missing Warehouse
 
-If a package refers to a warehouse that does not exist:
-
-{
-    "warehouses": {},
-    "agents": {
-        "A1": [10, 20]
-    },
-    "packages": [
-        {
-            "id": "P1",
-            "warehouse": "W1",
-            "destination": [30, 40]
-        }
-    ]
-}
-
-The program raises:
+If a package refers to a warehouse that does not exist, the program raises:
 
 ValueError: Warehouse 'W1' does not exist
 No Available Agents
 
-If packages exist but there are no agents:
+If no agents are available for package assignment, the program raises:
+
+ValueError: NO agents are available for package assignment
+
+This prevents the program from attempting to assign a package when the required data is unavailable.
+
+Running the Program
+
+Open the terminal in VS Code.
+
+If the terminal is currently in the parent directory:
+
+C:\Users\LENOVO\project_new>
+
+navigate into the project folder:
+
+cd Mystery_Delivery_System
+
+Then run:
+
+python main.py
+
+If the VS Code terminal is already inside:
+
+C:\Users\LENOVO\project_new\Mystery_Delivery_System>
+
+you can directly run:
+
+python main.py
+
+The program reads data.json, performs the delivery simulation, displays the results, and generates/updates report.json.
+
+## Logic Assumptions
+
+The assignment allows some interpretation. The following assumptions were used:
+
+Nearest-agent assignment: Each package is assigned to the agent closest to its warehouse.
+Distance calculation: Euclidean distance is used.
+
+Delivery route: The route for each package is assumed to be:
+
+Agent → Warehouse → Destination
+Agent location: An agent's original location is used when calculating the distance to the warehouse for each assigned package. The agent's location is not updated after a delivery.
+Independent packages: Each package is treated independently. Multiple packages assigned to the same agent are not combined into an optimized delivery route.
+Tie-breaking: If two agents have exactly the same distance to a warehouse, the first agent encountered in the input data is selected. This is because the assignment condition replaces the current agent only when a strictly smaller distance is found.
+
+Efficiency: Efficiency is calculated as:
+
+Total Distance / Packages Delivered
+Agents with zero deliveries: Agents that deliver zero packages are excluded when determining the best agent.
+Best agent: The best agent is the active agent with the lowest distance per delivered package.
+Invalid warehouse: A package referring to a non-existent warehouse causes a ValueError.
+No agents: If there are no available agents, the program raises a ValueError.
+## Test Cases
+
+The program was tested with both supported input formats.
+
+Test Case 1 — Base Format
+
+This format uses:
+
+warehouses → list of dictionaries
+agents     → list of dictionaries
+packages   → warehouse_id
+
+Example:
+
+{
+    "warehouses": [
+        {"id": "W1", "location": [0, 0]},
+        {"id": "W2", "location": [50, 75]},
+        {"id": "W3", "location": [100, 25]}
+    ],
+    "agents": [
+        {"id": "A1", "location": [5, 5]},
+        {"id": "A2", "location": [60, 60]},
+        {"id": "A3", "location": [95, 30]}
+    ],
+    "packages": [
+        {"id": "P1", "warehouse_id": "W1", "destination": [30, 40]},
+        {"id": "P2", "warehouse_id": "W2", "destination": [70, 90]},
+        {"id": "P3", "warehouse_id": "W3", "destination": [105, 20]},
+        {"id": "P4", "warehouse_id": "W1", "destination": [10, 10]},
+        {"id": "P5", "warehouse_id": "W2", "destination": [40, 80]}
+    ]
+}
+Test Case 2 — Dictionary Format
+
+This format uses:
+
+warehouses → dictionary
+agents     → dictionary
+packages   → warehouse
+
+Example:
 
 {
     "warehouses": {
-        "W1": [10, 20]
+        "W1": [11, 35],
+        "W2": [14, 40],
+        "W3": [75, 54]
     },
-    "agents": {},
-    "packages": [
-        {
-            "id": "P1",
-            "warehouse": "W1",
-            "destination": [30, 40]
-        }
-    ]
+    "agents": {
+        "A1": [69, 36],
+        "A2": [64, 71],
+        "A3": [97, 58]
+    }
 }
 
-The program raises:
+The program successfully normalizes this format and processes the packages using the same delivery logic.
 
-ValueError: NO agents are available for package assignment
-Empty Delivery System
+Design Decisions
+Common Internal Format
 
-An empty system is also handled:
+Instead of writing separate assignment and simulation logic for each input format, the program normalizes warehouse and agent data once.
 
-{
-    "warehouses": {},
-    "agents": {},
-    "packages": []
-}
+This reduces duplicated logic and makes the remaining functions simpler.
 
-Since there are no packages to assign, the program completes successfully.
+Euclidean Distance
 
-The generated report contains:
+Euclidean distance was selected because the assignment describes locations using two-dimensional coordinates.
 
-{
-    "best_agent": null
-}
-## Test Cases
+Independent Delivery Calculation
 
-The implementation was tested using multiple test cases containing different:
+Each package's route is calculated independently using the agent's original location. No route optimization or dynamic agent movement is performed.
 
-Numbers of warehouses
-Numbers of agents
-Numbers of packages
-Warehouse locations
-Agent locations
-Package destinations
-Agent/package distributions
-Input formats
+JSON Output
 
-The test cases also include cases where some agents receive no packages.
+The final report is stored as JSON because the input is also JSON and the format is easy to read and process programmatically.
 
-Example Test Case
-
-For one test case:
-
-P1 → A4
-P2 → A4
-P3 → A3
-P4 → A2
-P5 → A4
-P6 → A3
-P7 → A3
-P8 → A3
-P9 → A3
-P10 → A3
-
-The resulting delivery statistics were:
-
-A1 → 0 packages
-A2 → 1 package
-A3 → 6 packages
-A4 → 3 packages
-
-Under the project's efficiency calculation, the best agent was determined from the agents who delivered at least one package.
-
-Another test case produced:
-
-A1 → 0 packages
-A2 → 2 packages
-A3 → 3 packages
-A4 → 6 packages
-
-The implementation successfully handled both cases.
-
-## Design Decisions
-Nearest Agent
-
-A package is assigned according to the agent's distance from the package's warehouse.
-
-Agent → Warehouse
-
-The destination is not used when deciding which agent receives the package.
-
-Delivery Distance
-
-After assignment, the package distance is calculated as:
-
-Agent → Warehouse → Destination
-Agent Location
-
-The agent's original location is used for the warehouse pickup calculation for each assigned package.
-
-The program does not update the agent's location after each delivery because the assignment does not specify an evolving agent position or route optimization between packages.
-
-## Functions
-
-The main functions in main.py are:
-
-Function	Purpose
-load_data()	Load JSON input
-normalize_locations()	Normalize warehouse/agent formats
-calculate_distance()	Calculate Euclidean distance
-find_nearest_agent()	Find nearest agent to a warehouse
-assign_packages()	Assign packages to agents
-simulate_delivery()	Calculate delivery statistics
-calculate_efficiency()	Calculate average distance per package
-find_best_agent()	Identify best-performing active agent
-save_report()	Save results to report.json
-main()	Run the complete workflow
-## Program Workflow
-data.json
-    |
-    v
-Load JSON data
-    |
-    v
-Normalize warehouses and agents
-    |
-    v
-Find nearest agent for each package
-    |
-    v
-Assign packages
-    |
-    v
-Simulate deliveries
-    |
-    v
-Calculate total distance
-    |
-    v
-Calculate efficiency
-    |
-    v
-Find best agent
-    |
-    v
-Generate report.json
-## Future Improvements / Bonus Features
+Program Workflow
+                 data.json
+                    │
+                    ▼
+              Load JSON data
+                    │
+                    ▼
+        Normalize warehouses
+        and agents
+                    │
+                    ▼
+          Find nearest agent
+           for each package
+                    │
+                    ▼
+          Assign packages
+                    │
+                    ▼
+        Simulate deliveries
+                    │
+                    
+       Calculate total distance
+                    │
+                    
+        Calculate efficiency
+                    │
+                    
+          Find best agent
+                    │
+                    
+             report.json
+## Future Improvements
 
 Possible future improvements include:
 
 Random delivery delays
-ASCII delivery routes
-Supporting an agent joining during the day
-Generating a CSV report of top performers
-More extensive input validation
-Unit tests using Python's unittest or pytest
-
-These features are optional extensions to the core delivery simulation.
-
+ASCII visualization of delivery routes
+Support for agents joining during the day
+CSV report for top-performing agents
+More detailed validation of input data
+Optimized multi-package routing
+Dynamic agent locations after each delivery
+Unit tests for individual functions
 ## Conclusion
 
-The Mystery Delivery System demonstrates:
+The Mystery Delivery System demonstrates how Python can be used to process structured JSON data, calculate distances, assign resources based on proximity, simulate deliveries, and generate performance reports.
 
-JSON file handling
-Python functions
-Dictionaries and lists
-Input normalization
-Euclidean distance calculation
-Package assignment
-Simulation logic
-Aggregation of delivery statistics
-Basic error handling
-JSON report generation
-
-The project is implemented using only Python's standard library.
+The program supports both the original base input format and the alternate test-case format by normalizing the warehouse and agent data before performing the main delivery operations.
